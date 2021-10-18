@@ -1,7 +1,7 @@
 package postgreSql
 
 import (
-	"Itechart/BookStore/Book-Store/internal/config"
+	"BookStore/internal/config"
 	"database/sql"
 	"time"
 )

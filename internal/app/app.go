@@ -1,10 +1,10 @@
 package app
 
 import (
-	"Itechart/BookStore/Book-Store/internal/config"
-	"Itechart/BookStore/Book-Store/internal/controllers"
-	"Itechart/BookStore/Book-Store/internal/handlers"
-	"Itechart/BookStore/Book-Store/internal/postgreSql"
+	"BookStore/internal/config"
+	"BookStore/internal/controllers"
+	"BookStore/internal/handlers"
+	"BookStore/internal/postgreSql"
 	"net/http"
 	"os"
 	"time"
@@ -51,8 +51,7 @@ func initializeAPIController(cfg config.AppConfig) (handlers.Controller, error) 
 func initializeRouter(controller handlers.Controller) *mux.Router {
 	var router = mux.NewRouter()
 	// var handler = handlers.NewHTTPHandler(controller)
-	router.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {}).Methods("POST")
-
+	router.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {}).Methods("GET")
 	return router
 }
 

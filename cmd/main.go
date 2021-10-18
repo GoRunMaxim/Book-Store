@@ -1,8 +1,8 @@
 package main
 
 import (
-	"Itechart/BookStore/Book-Store/internal/app"
-	"Itechart/BookStore/Book-Store/internal/config"
+	"BookStore/internal/app"
+	"BookStore/internal/config"
 	"net/http"
 	"time"
 
