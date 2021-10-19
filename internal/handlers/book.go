@@ -3,9 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 // AppName is the name of application. We use it for logging messages
@@ -25,5 +26,5 @@ func (h *HTTPHandler) GetAllBooks(rw http.ResponseWriter, req *http.Request) {
 	if err = json.NewEncoder(rw).Encode(books); err != nil {
 		logrus.Errorf(AppName+"["+time.Now().Format(time.RFC822)+"] "+"Cannot encode messages! ", err.Error())
 	}
-	logrus.Info(AppName + "[" + time.Now().Format(time.RFC822) + "] " + fmt.Sprintf("All books has been sent"))
+	logrus.Info(AppName + "[" + time.Now().Format(time.RFC822) + "] " + "All books has been sent")
 }

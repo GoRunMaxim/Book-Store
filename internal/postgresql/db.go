@@ -1,4 +1,4 @@
-package postgreSql
+package postgresql
 
 import (
 	"BookStore/internal/config"
@@ -12,8 +12,9 @@ type DB struct {
 	db *sql.DB
 }
 
-func (D *DB) GetAllBooks() ([]models.BStore, error) {
-	panic("implement me")
+// GetBooks return all book in the DB
+func (d *DB) GetBooks() ([]models.BStore, error) {
+	return nil, nil
 }
 
 // New returns new DB repository

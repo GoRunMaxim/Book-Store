@@ -4,7 +4,7 @@ import (
 	"BookStore/internal/config"
 	"BookStore/internal/controllers"
 	"BookStore/internal/handlers"
-	"BookStore/internal/postgreSql"
+	"BookStore/internal/postgresql"
 	"net/http"
 	"os"
 	"time"
@@ -39,7 +39,7 @@ func Initialize(cfg config.AppConfig) (externalRouter *mux.Router, err error) {
 
 // initializeAPIController performs required controller configuration.
 func initializeAPIController(cfg config.AppConfig) (handlers.Controller, error) {
-	DB, err := postgreSql.New(cfg.DbConfig)
+	DB, err := postgresql.New(cfg.DbConfig)
 	if err != nil {
 		logrus.Errorf(ApplicationName+"["+time.Now().Format(time.RFC822)+"] "+"Cannot create DB: ", err.Error())
 		return nil, err
@@ -57,7 +57,7 @@ func initializeRouter(controller handlers.Controller) *mux.Router {
 
 func initializeLogger(cfg config.LogConfig) error {
 	if cfg.WriteToFile {
-		f, err := os.OpenFile(cfg.Filepath, os.O_WRONLY|os.O_CREATE, 0755)
+		f, err := os.OpenFile(cfg.Filepath, os.O_WRONLY|os.O_CREATE, 0222)
 		if err != nil {
 			return err
 		}

@@ -4,16 +4,15 @@ import (
 	"BookStore/internal/models"
 	"BookStore/mocks"
 	"encoding/json"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
-
-
-func TestHTTPHandler_Books(t *testing.T){
+func TestHTTPHandler_Books(t *testing.T) {
 	bStoreExample := models.BStore{
 		ID:          0,
 		Title:       "classic",
@@ -39,10 +38,9 @@ func TestHTTPHandler_Books(t *testing.T){
 		require.Equal(t, http.StatusOK, rr.Code)
 		var result []models.BStore
 		err = json.NewDecoder(rr.Body).Decode(&result)
-		if err != nil{
+		if err != nil {
 			t.Fatal("Wrong result, cannot decode to struct")
 		}
 		require.Equal(t, books, result)
 	})
 }
-

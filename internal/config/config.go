@@ -9,8 +9,8 @@ const SERVICENAME = "BookStore"
 
 // AppConfig contains all the config variables for the application
 type AppConfig struct {
-	DbConfig          DatabaseConfig
-	LogConfig         LogConfig
+	DbConfig  DatabaseConfig
+	LogConfig LogConfig
 }
 
 // DatabaseConfig contains variables, that are required for a database connection
@@ -19,7 +19,7 @@ type DatabaseConfig struct {
 	ConnectionString string `split_words:"true" required:"true"`
 }
 
-// LogConfig contains variables, that define log behaviour
+// LogConfig contains variables, that define log behavior
 type LogConfig struct {
 	WriteToFile bool   `split_words:"true"`
 	Filepath    string `split_words:"true"`
