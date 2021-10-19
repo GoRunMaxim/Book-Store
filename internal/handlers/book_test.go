@@ -6,8 +6,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/mock"
 
 	"github.com/stretchr/testify/require"
 )
@@ -24,11 +27,12 @@ func TestHTTPHandler_Books(t *testing.T) {
 	}
 	var books []models.BStore
 	books = append(books, bStoreExample)
-	t.Run("get request for all book, all okey", func(t *testing.T) {
+
+	t.Run("good GET request for all book", func(t *testing.T) {
 		controller := mocks.Controller{}
 		controller.On("GetAllBooks").Return(books, nil)
 		var handler = NewHTTPHandler(&controller)
-		req, err := http.NewRequest("GET", "/book", nil)
+		req, err := http.NewRequest(http.MethodGet, "/book", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -42,5 +46,63 @@ func TestHTTPHandler_Books(t *testing.T) {
 			t.Fatal("Wrong result, cannot decode to struct")
 		}
 		require.Equal(t, books, result)
+	})
+
+	t.Run("bad POST request, try to add book with nil body", func(t *testing.T) {
+		controller := mocks.Controller{}
+		controller.On("AddBook").Return(nil)
+		var handler = NewHTTPHandler(&controller)
+		req, err := http.NewRequest(http.MethodPost, "/book", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		rr := httptest.NewRecorder()
+		endpoint := http.HandlerFunc(handler.AddBook)
+		endpoint.ServeHTTP(rr, req)
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+		require.Equal(t, rr.Body.String(), "invalid post form\n")
+	})
+	t.Run("bad POST request, try to add book with wrong post body", func(t *testing.T) {
+		controller := mocks.Controller{}
+		controller.On("AddBook", mock.Anything).Return(nil)
+		var handler = NewHTTPHandler(&controller)
+		req, err := http.NewRequest(http.MethodPost, "/book", strings.NewReader(""))
+		if err != nil {
+			t.Fatal(err)
+		}
+		rr := httptest.NewRecorder()
+		endpoint := http.HandlerFunc(handler.AddBook)
+		endpoint.ServeHTTP(rr, req)
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+		require.Equal(t, rr.Body.String(), ErrRequestBody+"\n")
+	})
+
+	t.Run("bad DELETE request, try to delete book without ID", func(t *testing.T) {
+		controller := mocks.Controller{}
+		controller.On("DeleteBookByID", mock.Anything).Return(nil)
+		var handler = NewHTTPHandler(&controller)
+		req, err := http.NewRequest(http.MethodDelete, "/book", strings.NewReader(""))
+		if err != nil {
+			t.Fatal(err)
+		}
+		rr := httptest.NewRecorder()
+		endpoint := http.HandlerFunc(handler.DeleteBook)
+		endpoint.ServeHTTP(rr, req)
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+		require.Equal(t, rr.Body.String(), ErrRequestBody+"\n")
+	})
+	t.Run("bad DELETE request, try to delete book with wrong ID", func(t *testing.T) {
+		controller := mocks.Controller{}
+		controller.On("DeleteBookByID", mock.Anything).Return(nil)
+		var handler = NewHTTPHandler(&controller)
+		req, err := http.NewRequest(http.MethodDelete, "/book", strings.NewReader("-1"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		rr := httptest.NewRecorder()
+		endpoint := http.HandlerFunc(handler.DeleteBook)
+		endpoint.ServeHTTP(rr, req)
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+		require.Equal(t, rr.Body.String(), "Invalid ID\n")
 	})
 }

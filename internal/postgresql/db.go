@@ -12,9 +12,19 @@ type DB struct {
 	db *sql.DB
 }
 
+// DeleteBookByID deletes book by ID from DB
+func (d *DB) DeleteBookByID(int) error {
+	return nil
+}
+
 // GetBooks return all book in the DB
 func (d *DB) GetBooks() ([]models.BStore, error) {
 	return nil, nil
+}
+
+// AddBook save book in the DB
+func (d *DB) AddBook(models.BStore) error {
+	return nil
 }
 
 // New returns new DB repository

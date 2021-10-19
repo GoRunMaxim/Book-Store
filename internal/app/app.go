@@ -52,6 +52,8 @@ func initializeRouter(controller handlers.Controller) *mux.Router {
 	var router = mux.NewRouter()
 	var handler = handlers.NewHTTPHandler(controller)
 	router.HandleFunc("/book", handler.GetAllBooks).Methods(http.MethodGet)
+	router.HandleFunc("/book", handler.AddBook).Methods(http.MethodPost)
+	router.HandleFunc("/book", handler.DeleteBook).Methods(http.MethodDelete)
 	return router
 }
 

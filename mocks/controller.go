@@ -13,6 +13,34 @@ type Controller struct {
 	mock.Mock
 }
 
+// AddBook provides a mock function with given fields: _a0
+func (_m *Controller) AddBook(_a0 models.BStore) error {
+	ret := _m.Called(_a0)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(models.BStore) error); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DeleteBookByID provides a mock function with given fields: _a0
+func (_m *Controller) DeleteBookByID(_a0 int) error {
+	ret := _m.Called(_a0)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int) error); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetAllBooks provides a mock function with given fields:
 func (_m *Controller) GetAllBooks() ([]models.BStore, error) {
 	ret := _m.Called()
