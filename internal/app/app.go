@@ -50,8 +50,8 @@ func initializeAPIController(cfg config.AppConfig) (handlers.Controller, error) 
 
 func initializeRouter(controller handlers.Controller) *mux.Router {
 	var router = mux.NewRouter()
-	// var handler = handlers.NewHTTPHandler(controller)
-	router.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {}).Methods("GET")
+	var handler = handlers.NewHTTPHandler(controller)
+	router.HandleFunc("/book", handler.GetAllBooks).Methods(http.MethodGet)
 	return router
 }
 

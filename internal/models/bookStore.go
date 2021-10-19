@@ -4,11 +4,11 @@ import "time"
 
 // BStore represents information about Book Storage struct
 type BStore struct {
-	ID int
-	Title string
-	Author string
-	PublicDate time.Time
-	PagesAmount int
-	CreatedTime time.Time
-	UpdatedTime time.Time
+	ID int `json:"id"`
+	Title string `json:"title"`
+	Author string `json:"author"`
+	PublicDate time.Time `json:"public_date"`
+	PagesAmount int `json:"pages_amount"`
+	CreatedTime time.Time `json:"created_time"`
+	UpdatedTime time.Time `json:"updated_time"`
 }
