@@ -59,8 +59,8 @@ func (h *HTTPHandler) AddBook(rw http.ResponseWriter, req *http.Request) {
 	logrus.Info(AppName + "[" + time.Now().Format(time.RFC822) + "] " + "book has been saved")
 }
 
-// DeleteBook tries to decode the json file. If success - delete book from the DB.
-func (h *HTTPHandler) DeleteBook(rw http.ResponseWriter, req *http.Request) {
+// DeleteBookByID tries to decode the json file. If success - delete book from the DB.
+func (h *HTTPHandler) DeleteBookByID(rw http.ResponseWriter, req *http.Request) {
 	err := req.ParseForm()
 	if err != nil {
 		logrus.Warn(context.Background(), AppName+"["+time.Now().Format(time.RFC822)+"] "+ErrPostForm, nil)
@@ -86,4 +86,27 @@ func (h *HTTPHandler) DeleteBook(rw http.ResponseWriter, req *http.Request) {
 	}
 	rw.WriteHeader(http.StatusOK)
 	logrus.Info(AppName + "[" + time.Now().Format(time.RFC822) + "] " + "book has been deleted")
+}
+
+// UpdateBookByID tries to decode the json file. If success - delete book from the DB.
+func (h *HTTPHandler) UpdateBookByID(rw http.ResponseWriter, req *http.Request) {
+	err := req.ParseForm()
+	if err != nil {
+		logrus.Warn(context.Background(), AppName+"["+time.Now().Format(time.RFC822)+"] "+ErrPostForm, nil)
+		http.Error(rw, ErrPostForm, http.StatusBadRequest)
+		return
+	}
+	var book models.BStore
+	err = json.NewDecoder(req.Body).Decode(&book)
+	if err != nil {
+		logrus.Info(ErrRequestBody)
+		http.Error(rw, ErrRequestBody, http.StatusBadRequest)
+	}
+	err = h.controller.UpdateBookByID(book)
+	if err != nil {
+		logrus.Error("cannot update book from the DB by:", err)
+		http.Error(rw, ErrServerInternal+" cannot update book", http.StatusInternalServerError)
+	}
+	rw.WriteHeader(http.StatusOK)
+	logrus.Info(AppName + "[" + time.Now().Format(time.RFC822) + "] " + "book has been updated")
 }

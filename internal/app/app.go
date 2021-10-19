@@ -51,9 +51,10 @@ func initializeAPIController(cfg config.AppConfig) (handlers.Controller, error) 
 func initializeRouter(controller handlers.Controller) *mux.Router {
 	var router = mux.NewRouter()
 	var handler = handlers.NewHTTPHandler(controller)
-	router.HandleFunc("/book", handler.GetAllBooks).Methods(http.MethodGet)
-	router.HandleFunc("/book", handler.AddBook).Methods(http.MethodPost)
-	router.HandleFunc("/book", handler.DeleteBook).Methods(http.MethodDelete)
+	router.HandleFunc("/book/get", handler.GetAllBooks).Methods(http.MethodGet)
+	router.HandleFunc("/book/add", handler.AddBook).Methods(http.MethodPost)
+	router.HandleFunc("/book/delete", handler.DeleteBookByID).Methods(http.MethodDelete)
+	router.HandleFunc("/book/update", handler.UpdateBookByID).Methods(http.MethodPost)
 	return router
 }
 

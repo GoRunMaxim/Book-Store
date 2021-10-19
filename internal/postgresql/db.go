@@ -12,6 +12,11 @@ type DB struct {
 	db *sql.DB
 }
 
+// UpdateBookByID updates book by ID in the DB
+func (d *DB) UpdateBookByID(models.BStore) error {
+	return nil
+}
+
 // DeleteBookByID deletes book by ID from DB
 func (d *DB) DeleteBookByID(int) error {
 	return nil

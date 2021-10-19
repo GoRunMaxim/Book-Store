@@ -7,4 +7,5 @@ type Repository interface {
 	AddBook(models.BStore) error
 	GetBooks() ([]models.BStore, error)
 	DeleteBookByID(int) error
+	UpdateBookByID(models.BStore) error
 }

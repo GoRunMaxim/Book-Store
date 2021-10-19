@@ -13,14 +13,20 @@ func (c *AppController) GetAllBooks() ([]models.BStore, error) {
 	return books, err
 }
 
-// AddBook save through the controller book to the DB
+// AddBook saves through the controller book to the DB
 func (c *AppController) AddBook(book models.BStore) error {
 	err := c.db.AddBook(book)
 	return err
 }
 
-// DeleteBookByID delete the book by id through the controller from the DB
+// DeleteBookByID deletes the book by id through the controller from the DB
 func (c *AppController) DeleteBookByID(id int) error {
 	err := c.db.DeleteBookByID(id)
+	return err
+}
+
+// UpdateBookByID updates the book by id through the controller in the DB
+func (c *AppController) UpdateBookByID(book models.BStore) error {
+	err := c.db.UpdateBookByID(book)
 	return err
 }

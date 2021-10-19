@@ -32,7 +32,7 @@ func TestHTTPHandler_Books(t *testing.T) {
 		controller := mocks.Controller{}
 		controller.On("GetAllBooks").Return(books, nil)
 		var handler = NewHTTPHandler(&controller)
-		req, err := http.NewRequest(http.MethodGet, "/book", nil)
+		req, err := http.NewRequest(http.MethodGet, "/book/add", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -52,7 +52,7 @@ func TestHTTPHandler_Books(t *testing.T) {
 		controller := mocks.Controller{}
 		controller.On("AddBook").Return(nil)
 		var handler = NewHTTPHandler(&controller)
-		req, err := http.NewRequest(http.MethodPost, "/book", nil)
+		req, err := http.NewRequest(http.MethodPost, "/book/update", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -66,7 +66,7 @@ func TestHTTPHandler_Books(t *testing.T) {
 		controller := mocks.Controller{}
 		controller.On("AddBook", mock.Anything).Return(nil)
 		var handler = NewHTTPHandler(&controller)
-		req, err := http.NewRequest(http.MethodPost, "/book", strings.NewReader(""))
+		req, err := http.NewRequest(http.MethodPost, "/book/update", strings.NewReader(""))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -81,12 +81,12 @@ func TestHTTPHandler_Books(t *testing.T) {
 		controller := mocks.Controller{}
 		controller.On("DeleteBookByID", mock.Anything).Return(nil)
 		var handler = NewHTTPHandler(&controller)
-		req, err := http.NewRequest(http.MethodDelete, "/book", strings.NewReader(""))
+		req, err := http.NewRequest(http.MethodDelete, "/book/delete", strings.NewReader(""))
 		if err != nil {
 			t.Fatal(err)
 		}
 		rr := httptest.NewRecorder()
-		endpoint := http.HandlerFunc(handler.DeleteBook)
+		endpoint := http.HandlerFunc(handler.DeleteBookByID)
 		endpoint.ServeHTTP(rr, req)
 		require.Equal(t, http.StatusBadRequest, rr.Code)
 		require.Equal(t, rr.Body.String(), ErrRequestBody+"\n")
@@ -95,12 +95,12 @@ func TestHTTPHandler_Books(t *testing.T) {
 		controller := mocks.Controller{}
 		controller.On("DeleteBookByID", mock.Anything).Return(nil)
 		var handler = NewHTTPHandler(&controller)
-		req, err := http.NewRequest(http.MethodDelete, "/book", strings.NewReader("-1"))
+		req, err := http.NewRequest(http.MethodDelete, "/book/delete", strings.NewReader("-1"))
 		if err != nil {
 			t.Fatal(err)
 		}
 		rr := httptest.NewRecorder()
-		endpoint := http.HandlerFunc(handler.DeleteBook)
+		endpoint := http.HandlerFunc(handler.DeleteBookByID)
 		endpoint.ServeHTTP(rr, req)
 		require.Equal(t, http.StatusBadRequest, rr.Code)
 		require.Equal(t, rr.Body.String(), "Invalid ID\n")

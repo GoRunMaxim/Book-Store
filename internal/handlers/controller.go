@@ -7,4 +7,5 @@ type Controller interface {
 	GetAllBooks() ([]models.BStore, error)
 	AddBook(models.BStore) error
 	DeleteBookByID(int) error
+	UpdateBookByID(models.BStore) error
 }
