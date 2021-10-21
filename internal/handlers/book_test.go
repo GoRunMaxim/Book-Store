@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -303,5 +304,83 @@ func TestHTTPHandler_UpdateBookByID(t *testing.T) {
 		endpoint.ServeHTTP(rr, req)
 		require.Equal(t, http.StatusBadRequest, rr.Code)
 		require.Equal(t, rr.Body.String(), "'title' field cannot be empty\n")
+	})
+}
+
+func TestHTTPHandler_FindBookBookByParameters(t *testing.T) {
+	t.Run("good GET request, try to find books description with 'author' parameter", func(t *testing.T) {
+		t.Parallel()
+		controller := mocks.Controller{}
+		bStoreExample := models.BStore{
+			ID:          5,
+			Title:       "classic",
+			Author:      "Remark",
+			PublicDate:  time.Date(2021, time.April, 21, 21, 21, 21, 21, time.UTC),
+			PagesAmount: 2000,
+			CreatedTime: time.Date(2022, time.May, 1, 1, 1, 1, 1, time.UTC),
+			UpdatedTime: time.Time{},
+		}
+		controller.On("FindBookByParameters", mock.Anything).Return([]models.BStore{
+			bStoreExample,
+		}, nil)
+		var handler = NewHTTPHandler(&controller)
+		req, err := http.NewRequest(http.MethodGet, "/book/find", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		data := url.Values{}
+		data.Set("author", "Remark")
+		data.Set("title", "")
+		data.Set("publication_date", "")
+		encodedData := data.Encode()
+		rr := httptest.NewRecorder()
+		req.URL.RawQuery = encodedData
+		endpoint := http.HandlerFunc(handler.FindBookBookByParameters)
+		endpoint.ServeHTTP(rr, req)
+		require.Equal(t, http.StatusOK, rr.Code)
+		var result []models.BStore
+		err = json.NewDecoder(rr.Body).Decode(&result)
+		if err != nil {
+			t.Fatal("Wrong result, cannot decode to struct")
+		}
+		require.Equal(t, []models.BStore{
+			bStoreExample,
+		}, result)
+	})
+	t.Run("bad GET request, try to find books description without parameters", func(t *testing.T) {
+		t.Parallel()
+		controller := mocks.Controller{}
+		controller.On("FindBookByParameters", mock.Anything).Return(nil, nil)
+		var handler = NewHTTPHandler(&controller)
+		req, err := http.NewRequest(http.MethodGet, "/book/find", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		rr := httptest.NewRecorder()
+		endpoint := http.HandlerFunc(handler.FindBookBookByParameters)
+		endpoint.ServeHTTP(rr, req)
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+		require.Equal(t, rr.Body.String(), ErrRequestBody+" cannot find parameters"+"\n")
+	})
+	t.Run("bad GET request, try to find books description with empty parameters", func(t *testing.T) {
+		t.Parallel()
+		controller := mocks.Controller{}
+		controller.On("FindBookByParameters", mock.Anything).Return(nil, nil)
+		var handler = NewHTTPHandler(&controller)
+		data := url.Values{}
+		data.Set("author", "")
+		data.Set("title", "")
+		data.Set("publication_date", "")
+		encodedData := data.Encode()
+		req, err := http.NewRequest(http.MethodGet, "/book/find", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.URL.RawQuery = encodedData
+		rr := httptest.NewRecorder()
+		endpoint := http.HandlerFunc(handler.FindBookBookByParameters)
+		endpoint.ServeHTTP(rr, req)
+		require.Equal(t, http.StatusBadRequest, rr.Code)
+		require.Equal(t, rr.Body.String(), ErrRequestBody+" cannot find parameters"+"\n")
 	})
 }

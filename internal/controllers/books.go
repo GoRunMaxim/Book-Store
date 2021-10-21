@@ -32,7 +32,7 @@ func (c *AppController) UpdateBookByID(book models.BStore) error {
 }
 
 // FindBookByParameters returns through the controller all books that had been find by special parameters from the DB
-func (c *AppController) FindBookByParameters() ([]models.BStore, error) {
-	books, err := c.db.FindBookByParameters()
+func (c *AppController) FindBookByParameters(parameters []string) ([]models.BStore, error) {
+	books, err := c.db.FindBookByParameters(parameters)
 	return books, err
 }

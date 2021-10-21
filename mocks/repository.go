@@ -41,13 +41,13 @@ func (_m *Repository) DeleteBookByID(_a0 int) error {
 	return r0
 }
 
-// FindBookByParameters provides a mock function with given fields:
-func (_m *Repository) FindBookByParameters() ([]models.BStore, error) {
-	ret := _m.Called()
+// FindBookByParameters provides a mock function with given fields: _a0
+func (_m *Repository) FindBookByParameters(_a0 []string) ([]models.BStore, error) {
+	ret := _m.Called(_a0)
 
 	var r0 []models.BStore
-	if rf, ok := ret.Get(0).(func() []models.BStore); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func([]string) []models.BStore); ok {
+		r0 = rf(_a0)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]models.BStore)
@@ -55,8 +55,8 @@ func (_m *Repository) FindBookByParameters() ([]models.BStore, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func([]string) error); ok {
+		r1 = rf(_a0)
 	} else {
 		r1 = ret.Error(1)
 	}

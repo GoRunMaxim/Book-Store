@@ -13,7 +13,7 @@ type DB struct {
 }
 
 // FindBookByParameters searches in the DB books by special parameters
-func (d *DB) FindBookByParameters() ([]models.BStore, error) {
+func (d *DB) FindBookByParameters([]string) ([]models.BStore, error) {
 	return nil, nil
 }
 

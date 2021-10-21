@@ -139,16 +139,26 @@ func (h *HTTPHandler) FindBookBookByParameters(rw http.ResponseWriter, req *http
 		return
 	}
 	var title, author, publicationDate string
+	findParameters := make([]string, 0, 3)
 	if req.FormValue("title") != "" {
 		title = req.FormValue("title")
+		findParameters = append(findParameters, title)
 	}
 	if req.FormValue("author") != "" {
 		author = req.FormValue("author")
+		findParameters = append(findParameters, author)
 	}
 	if req.FormValue("publication_date") != "" {
 		publicationDate = req.FormValue("publication_date")
+		findParameters = append(findParameters, publicationDate)
 	}
-	books, err := h.controller.FindBookByParameters()
+	logrus.Info(req.URL)
+	if len(findParameters) == 0 {
+		logrus.Error("not enough arguments, should be at least 1 in search parameters:")
+		http.Error(rw, ErrRequestBody+" cannot find parameters", http.StatusBadRequest)
+		return
+	}
+	books, err := h.controller.FindBookByParameters(findParameters)
 	if err != nil {
 		logrus.Error("cannot update book from the DB by:", err)
 		http.Error(rw, ErrServerInternal+" cannot update book", http.StatusInternalServerError)
