@@ -12,6 +12,11 @@ type DB struct {
 	db *sql.DB
 }
 
+// FindBookByParameters searches in the DB books by special parameters
+func (d *DB) FindBookByParameters() ([]models.BStore, error) {
+	return nil, nil
+}
+
 // UpdateBookByID updates book by ID in the DB
 func (d *DB) UpdateBookByID(models.BStore) error {
 	return nil

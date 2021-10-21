@@ -32,6 +32,8 @@ func (h *HTTPHandler) GetAllBooks(rw http.ResponseWriter, req *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 	if err = json.NewEncoder(rw).Encode(books); err != nil {
 		logrus.Errorf(AppName+"["+time.Now().Format(time.RFC822)+"] "+"Cannot encode messages! ", err.Error())
+		http.Error(rw, ErrRequestBody, http.StatusBadRequest)
+		return
 	}
 	logrus.Info(AppName + "[" + time.Now().Format(time.RFC822) + "] " + "All books has been sent")
 }
@@ -49,11 +51,19 @@ func (h *HTTPHandler) AddBook(rw http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		logrus.Info(ErrRequestBody)
 		http.Error(rw, ErrRequestBody, http.StatusBadRequest)
+		return
+	}
+	err = checkBookDescription(book)
+	if err != nil {
+		logrus.Info(err)
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
 	}
 	err = h.controller.AddBook(book)
 	if err != nil {
 		logrus.Error("cannot add book to the DB:", err)
 		http.Error(rw, ErrServerInternal+" cannot add book", http.StatusInternalServerError)
+		return
 	}
 	rw.WriteHeader(http.StatusOK)
 	logrus.Info(AppName + "[" + time.Now().Format(time.RFC822) + "] " + "book has been saved")
@@ -83,6 +93,7 @@ func (h *HTTPHandler) DeleteBookByID(rw http.ResponseWriter, req *http.Request) 
 	if err != nil {
 		logrus.Error("cannot delete book from the DB by:", err)
 		http.Error(rw, ErrServerInternal+" cannot delete book", http.StatusInternalServerError)
+		return
 	}
 	rw.WriteHeader(http.StatusOK)
 	logrus.Info(AppName + "[" + time.Now().Format(time.RFC822) + "] " + "book has been deleted")
@@ -101,12 +112,67 @@ func (h *HTTPHandler) UpdateBookByID(rw http.ResponseWriter, req *http.Request) 
 	if err != nil {
 		logrus.Info(ErrRequestBody)
 		http.Error(rw, ErrRequestBody, http.StatusBadRequest)
+		return
+	}
+	err = checkBookDescription(book)
+	if err != nil {
+		logrus.Info(err)
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
 	}
 	err = h.controller.UpdateBookByID(book)
 	if err != nil {
 		logrus.Error("cannot update book from the DB by:", err)
 		http.Error(rw, ErrServerInternal+" cannot update book", http.StatusInternalServerError)
+		return
 	}
 	rw.WriteHeader(http.StatusOK)
 	logrus.Info(AppName + "[" + time.Now().Format(time.RFC822) + "] " + "book has been updated")
+}
+
+// FindBookBookByParameters tries to search book by special parameters: title, author, publication date
+func (h *HTTPHandler) FindBookBookByParameters(rw http.ResponseWriter, req *http.Request) {
+	err := req.ParseForm()
+	if err != nil {
+		logrus.Warn(context.Background(), AppName+"["+time.Now().Format(time.RFC822)+"] "+ErrPostForm, nil)
+		http.Error(rw, ErrPostForm, http.StatusBadRequest)
+		return
+	}
+	var title, author, publicationDate string
+	if req.FormValue("title") != "" {
+		title = req.FormValue("title")
+	}
+	if req.FormValue("author") != "" {
+		author = req.FormValue("author")
+	}
+	if req.FormValue("publication_date") != "" {
+		publicationDate = req.FormValue("publication_date")
+	}
+	books, err := h.controller.FindBookByParameters()
+	if err != nil {
+		logrus.Error("cannot update book from the DB by:", err)
+		http.Error(rw, ErrServerInternal+" cannot update book", http.StatusInternalServerError)
+		return
+	}
+	logrus.Info(title, author, publicationDate)
+	rw.WriteHeader(http.StatusOK)
+	if err = json.NewEncoder(rw).Encode(books); err != nil {
+		logrus.Errorf(AppName+"["+time.Now().Format(time.RFC822)+"] "+"Cannot encode messages! ", err.Error())
+		http.Error(rw, ErrRequestBody, http.StatusBadRequest)
+		return
+	}
+	logrus.Info(AppName + "[" + time.Now().Format(time.RFC822) + "] " + "All books has been sent")
+}
+
+func checkBookDescription(book models.BStore) error {
+	switch {
+	case book.ID < 0:
+		return fmt.Errorf("id cannot be less than 0")
+	case book.Author == "":
+		return fmt.Errorf("'author' field cannot be empty")
+	case book.Title == "":
+		return fmt.Errorf("'title' field cannot be empty")
+	default:
+		return nil
+	}
 }

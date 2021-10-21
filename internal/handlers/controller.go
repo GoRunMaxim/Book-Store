@@ -8,4 +8,5 @@ type Controller interface {
 	AddBook(models.BStore) error
 	DeleteBookByID(int) error
 	UpdateBookByID(models.BStore) error
+	FindBookByParameters() ([]models.BStore, error)
 }
